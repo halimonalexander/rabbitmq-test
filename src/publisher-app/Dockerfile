@@ -1,12 +1,4 @@
 FROM php:7.4-fpm
-USER root
-
-MAINTAINER eAuth <admin@eauth.cc>
-
-# Arguments defined in docker-compose.yml
-ARG user
-ARG uid
-ARG port
 
 # Install dependencies
 RUN apt-get update \
@@ -23,22 +15,15 @@ RUN apt-get update \
  && apt-get clean \
  && rm -rf /var/lib/apt/lists/* \
  # Install extensions
- && docker-php-ext-install exif iconv mbstring pdo pdo_mysql pcntl zip \
- # Install composer
- && curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer \
- # Add user for laravel application
- && groupadd -g $uid $user \
- && useradd -u $uid -ms /bin/bash -g www $user
+ && docker-php-ext-install exif iconv mbstring pdo pdo_mysql pcntl zip
 
-# Copy existing application directory permissions
-#COPY --chown=$user:www . /var/www
+ ADD ./docker/php/php.ini /usr/local/etc/php/php.ini
+
+ # Install composer
+ RUN curl -sS https://getcomposer.org/installer \
+     | php -- --install-dir=/usr/local/bin --filename=composer --quiet
 
 # Set working directory
 WORKDIR /var/www
 
-# Change current user to www
-USER $user
-
-# Expose port $port and start php-fpm server
-EXPOSE $port
 CMD ["php-fpm"]
