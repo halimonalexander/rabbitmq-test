@@ -62,4 +62,4 @@ services:
       - 8081:8081
     volumes:
       - ./docker/nginx/conf.d/:/etc/nginx/conf.d/
-      - ./logs/nginx/:/var/log/nginx/
+      - ./docker/logs/nginx/:/var/log/nginx/
